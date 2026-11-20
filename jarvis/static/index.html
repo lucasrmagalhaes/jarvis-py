@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J.A.R.V.I.S.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'"
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;500;600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+:root {
+  --bg-deep: #02060c;
+  --bg-navy: #061120;
+  --line: rgba(80, 180, 235, 0.14);
+  --cyan: #46c8ff;
+  --cyan-bright: #8ae6ff;
+  --cyan-dim: rgba(70, 200, 255, 0.55);
+  --gold: #ffc861;
+  --mint: #7dffd4;
+  --red: #ff6a6a;
+  --text: #cfe9f7;
+  --text-dim: #5f8aa6;
+  --core: #2e9fd8;
+  --spin: 24s;
+  --pulse: 4.5s;
+  --font-display: "Chakra Petch", "Trebuchet MS", "Avenir Next Condensed", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  background:
+    radial-gradient(1200px 800px at 28% 38%, rgba(28, 78, 120, 0.28), transparent 60%),
+    radial-gradient(900px 700px at 78% 80%, rgba(16, 54, 92, 0.22), transparent 65%),
+    linear-gradient(160deg, var(--bg-navy), var(--bg-deep) 70%);
+  color: var(--text);
+  font-family: var(--font-mono);
+  overflow: hidden;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at 30% 40%, black 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 30% 40%, black 20%, transparent 75%);
+  pointer-events: none;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent 0 2px, rgba(0, 0, 0, 0.16) 2px 4px);
+  pointer-events: none;
+  opacity: 0.5;
+}
+body[data-state="listening"] { --core: #62e8ff; --spin: 8s; --pulse: 1.2s; }
+body[data-state="processing"] { --core: var(--gold); --spin: 3.5s; --pulse: 0.9s; }
+body[data-state="speaking"] { --core: var(--mint); --spin: 14s; --pulse: 2s; }
+
+.frame {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: clamp(14px, 3vh, 28px) clamp(16px, 3.5vw, 40px);
+}
+header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+}
+.brand { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
+h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(20px, 2.6vw, 30px);
+  letter-spacing: 0.42em;
+  color: var(--cyan-bright);
+  text-shadow: 0 0 18px rgba(70, 200, 255, 0.55);
+}
+.tagline {
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.versao {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--cyan-dim);
+}
+.link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--text-dim);
+}
+a.resumo {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  text-decoration: none;
+}
+.atalhos {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.link .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 10px var(--red);
+  transition: background 0.4s, box-shadow 0.4s;
+}
+.link.online .dot { background: var(--mint); box-shadow: 0 0 10px var(--mint); }
+
+main {
+  display: grid;
+  grid-template-columns: minmax(300px, 5fr) 7fr;
+  gap: clamp(16px, 3vw, 48px);
+  min-height: 0;
+  padding-top: clamp(12px, 2.5vh, 26px);
+}
+.reactor-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(18px, 4vh, 34px);
+}
+.reactor { position: relative; width: min(38vh, 78%, 340px); aspect-ratio: 1; }
+.reactor .ring { position: absolute; border-radius: 50%; }
+.ring-a {
+  inset: 0;
+  border: 1px solid rgba(70, 200, 255, 0.28);
+  border-top-color: var(--core);
+  border-bottom-color: var(--core);
+  animation: spin var(--spin) linear infinite;
+  filter: drop-shadow(0 0 6px var(--core));
+}
+.ring-b {
+  inset: 9%;
+  border: 1px dashed rgba(70, 200, 255, 0.35);
+  animation: spin calc(var(--spin) * 0.6) linear infinite reverse;
+}
+.ring-c {
+  inset: 18%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 18deg, var(--core) 18deg 26deg,
+    transparent 26deg 78deg, var(--core) 78deg 86deg,
+    transparent 86deg 138deg, var(--core) 138deg 146deg,
+    transparent 146deg 198deg, var(--core) 198deg 206deg,
+    transparent 206deg 258deg, var(--core) 258deg 266deg,
+    transparent 266deg 318deg, var(--core) 318deg 326deg,
+    transparent 326deg);
+  mask: radial-gradient(circle, transparent 62%, black 63% 100%);
+  -webkit-mask: radial-gradient(circle, transparent 62%, black 63% 100%);
+  animation: spin calc(var(--spin) * 0.45) linear infinite;
+  opacity: 0.9;
+}
+.core {
+  position: absolute;
+  inset: 30%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 45%, #eafcff 0 12%, var(--core) 34%, rgba(10, 30, 50, 0.9) 78%);
+  box-shadow:
+    0 0 24px var(--core),
+    0 0 90px color-mix(in srgb, var(--core) 55%, transparent),
+    inset 0 0 26px rgba(255, 255, 255, 0.35);
+  animation: pulse var(--pulse) ease-in-out infinite;
+  transition: box-shadow 0.6s;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.88; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ring-a, .ring-b, .ring-c, .core { animation: none; }
+}
+.state { text-align: center; font-family: var(--font-display); }
+.state .label {
+  font-size: clamp(15px, 1.7vw, 20px);
+  font-weight: 500;
+  letter-spacing: 0.5em;
+  padding-left: 0.5em;
+  color: var(--cyan-bright);
+  text-shadow: 0 0 14px var(--core);
+  text-transform: uppercase;
+}
+.state .hint {
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+.vault-status {
+  width: min(100%, 380px);
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+.vault-status .kicker {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--cyan-dim);
+  margin-bottom: 6px;
+}
+.vault-status .pending { margin-top: 4px; color: var(--gold); }
+.vault-status .pending.clear { color: var(--mint); }
+
+.console {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 0;
+  border-left: 1px solid var(--line);
+  padding-left: clamp(14px, 2.5vw, 36px);
+}
+.console-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  padding-bottom: 12px;
+}
+.feed {
+  overflow-y: auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(70, 200, 255, 0.3) transparent;
+}
+.feed:empty::before {
+  content: "Aguardando a primeira interação. Diga “Hey Jarvis” ou digite abaixo.";
+  color: var(--text-dim);
+  font-size: 12px;
+  font-style: italic;
+  letter-spacing: 0.05em;
+}
+.entry {
+  border-left: 2px solid var(--cyan-dim);
+  padding: 2px 0 2px 14px;
+  animation: reveal 0.35s ease-out both;
+}
+.entry.reply { border-left-color: var(--cyan-bright); }
+.entry.error { border-left-color: var(--red); }
+.entry.pending { opacity: 0.55; }
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.entry .meta {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.entry.user .meta { color: var(--text-dim); }
+.entry.reply .meta { color: var(--cyan-bright); }
+.entry.error .meta { color: var(--red); }
+.entry .meta time { letter-spacing: 0.1em; opacity: 0.7; }
+.entry p {
+  font-size: 13.5px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--text);
+}
+.entry.user p { color: #a8c8dc; }
+.entry.error p { color: #ffb3b3; }
+
+form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: rgba(6, 20, 36, 0.6);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+form:focus-within {
+  border-color: var(--cyan-dim);
+  box-shadow: 0 0 18px rgba(70, 200, 255, 0.12);
+}
+form .prompt {
+  color: var(--cyan);
+  font-weight: 500;
+  text-shadow: 0 0 8px var(--core);
+}
+input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  caret-color: var(--cyan-bright);
+}
+input::placeholder { color: var(--text-dim); opacity: 0.7; }
+button {
+  background: none;
+  border: 1px solid var(--cyan-dim);
+  color: var(--cyan-bright);
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  padding: 8px 16px 8px 19px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.25s, box-shadow 0.25s, opacity 0.25s;
+}
+button:hover:not(:disabled) {
+  background: rgba(70, 200, 255, 0.12);
+  box-shadow: 0 0 14px rgba(70, 200, 255, 0.25);
+}
+button:disabled { opacity: 0.4; cursor: default; }
+
+@media (max-width: 760px) {
+  body { overflow: auto; }
+  .frame { height: auto; min-height: 100%; }
+  main { grid-template-columns: 1fr; }
+  .console { border-left: none; padding-left: 0; }
+  .reactor { width: min(52vw, 240px); }
+  .feed { overflow-y: visible; }
+}
+</style>
+</head>
+<body data-state="standby">
+<div class="frame">
+  <header>
+    <div class="brand">
+      <h1>J.A.R.V.I.S.</h1>
+      <span class="tagline">Just A Rather Very Intelligent System</span>
+      <span class="versao" id="versao">Versão __JARVIS_VERSION__</span>
+    </div>
+    <nav class="atalhos">
+      <a class="resumo" href="/resumo?t=__PANEL_TOKEN__">Resumo</a>
+      <a class="resumo" href="/progresso?t=__PANEL_TOKEN__">Progresso</a>
+    </nav>
+    <div class="link" id="link"><span class="dot"></span><span id="linkText">OFFLINE</span></div>
+  </header>
+  <main>
+    <section class="reactor-col">
+      <div class="reactor">
+        <div class="ring ring-a"></div>
+        <div class="ring ring-b"></div>
+        <div class="ring ring-c"></div>
+        <div class="core"></div>
+      </div>
+      <div class="state">
+        <div class="label" id="stateLabel">Em espera</div>
+        <div class="hint" id="stateHint">Diga "Hey Jarvis" para me chamar, senhor.</div>
+      </div>
+      <div class="vault-status" id="vaultStatus">
+        <span class="kicker">Vault</span>
+        <div id="vaultDetail">Aguardando sincronização</div>
+        <div class="pending" id="vaultPending"></div>
+      </div>
+    </section>
+    <section class="console">
+      <div class="console-title">Registro de comunicações</div>
+      <div class="feed" id="feed"></div>
+      <form id="form" autocomplete="off">
+        <span class="prompt">&#10095;</span>
+        <input id="input" placeholder="Transmitir mensagem ao Jarvis..." maxlength="2000">
+        <button type="submit" id="send">Enviar</button>
+      </form>
+    </section>
+  </main>
+</div>
+<script>
+const TOKEN = "__PANEL_TOKEN__";
+const ARQUIVO = "__PAINEL_ARQUIVO__";
+const STATES = {
+  standby: ["Em espera", 'Diga "Hey Jarvis" para me chamar, senhor.'],
+  listening: ["Ouvindo", "Pode falar. Uma pausa encerra a captura."],
+  processing: ["Processando", "Consultando os sistemas..."],
+  speaking: ["Respondendo", "Transmitindo resposta de voz."],
+};
+const ROLES = { user: "Você", reply: "Jarvis", error: "Falha" };
+const feed = document.getElementById("feed");
+const form = document.getElementById("form");
+const input = document.getElementById("input");
+const send = document.getElementById("send");
+const link = document.getElementById("link");
+const linkText = document.getElementById("linkText");
+const isNarrow = () => window.matchMedia("(max-width: 760px)").matches;
+const pending = [];
+let lastId = 0;
+
+function setVault(event) {
+  const detail = document.getElementById("vaultDetail");
+  const pending = document.getElementById("vaultPending");
+  detail.textContent = event.detail || "Aguardando sincronização";
+  pending.classList.remove("clear");
+  if (!event.pending_known) {
+    pending.textContent = "";
+    return;
+  }
+  const count = Number(event.pending || 0);
+  if (count <= 0) {
+    pending.textContent = "Nada pendente de envio";
+    pending.classList.add("clear");
+    return;
+  }
+  pending.textContent = count === 1 ? "1 commit por enviar" : count + " commits por enviar";
+}
+
+function setState(value) {
+  if (!STATES[value]) return;
+  document.body.dataset.state = value;
+  document.getElementById("stateLabel").textContent = STATES[value][0];
+  document.getElementById("stateHint").textContent = STATES[value][1];
+}
+
+function atBottom() {
+  if (isNarrow()) {
+    const remaining = document.documentElement.scrollHeight - window.scrollY - window.innerHeight;
+    return remaining < 120;
+  }
+  return feed.scrollHeight - feed.scrollTop - feed.clientHeight < 120;
+}
+
+function scrollToLatest() {
+  if (isNarrow()) window.scrollTo({ top: document.documentElement.scrollHeight });
+  else feed.scrollTop = feed.scrollHeight;
+}
+
+function addEntry(role, text, ts, pending) {
+  const stick = atBottom();
+  const entry = document.createElement("div");
+  entry.className = "entry " + role + (pending ? " pending" : "");
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  const who = document.createElement("span");
+  who.textContent = ROLES[role] || role;
+  const when = document.createElement("time");
+  const moment = ts ? new Date(ts * 1000) : new Date();
+  when.textContent = moment.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  meta.append(who, when);
+  const body = document.createElement("p");
+  body.textContent = text;
+  entry.append(meta, body);
+  feed.append(entry);
+  while (feed.children.length > 200) feed.firstChild.remove();
+  if (stick) scrollToLatest();
+  return entry;
+}
+
+function handle(event) {
+  if (event.id) {
+    if (event.id <= lastId) return;
+    lastId = event.id;
+  }
+  if (event.type === "state") {
+    setState(event.value);
+    return;
+  }
+  if (event.type === "vault") {
+    setVault(event);
+    return;
+  }
+  if (!ROLES[event.type]) return;
+  if (event.type === "user") {
+    const index = pending.findIndex((echo) => echo.text === event.text);
+    if (index >= 0) {
+      pending[index].node.remove();
+      pending.splice(index, 1);
+    }
+  }
+  addEntry(event.type, event.text, event.ts);
+}
+
+function connect() {
+  const source = new EventSource("/events?t=" + encodeURIComponent(TOKEN));
+  source.onopen = () => {
+    link.classList.add("online");
+    linkText.textContent = "LINK ATIVO";
+  };
+  source.onerror = () => {
+    link.classList.remove("online");
+    linkText.textContent = source.readyState === 2 ? "SEM LINK" : "RECONECTANDO";
+  };
+  source.onmessage = (raw) => {
+    let event;
+    try { event = JSON.parse(raw.data); } catch { return; }
+    if (event.type === "hello") event.history.forEach(handle);
+    else handle(event);
+  };
+}
+
+input.addEventListener("keydown", (key) => {
+  if (key.key === "Enter" && !key.isComposing) {
+    key.preventDefault();
+    if (typeof form.requestSubmit === "function") form.requestSubmit();
+    else form.dispatchEvent(new Event("submit", { cancelable: true }));
+  }
+});
+
+form.addEventListener("submit", async (submit) => {
+  submit.preventDefault();
+  const message = input.value.trim();
+  if (!message || send.disabled) return;
+  send.disabled = true;
+  const echo = addEntry("user", message, null, true);
+  const ticket = { text: message, node: echo };
+  pending.push(ticket);
+  try {
+    const response = await fetch("/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, token: TOKEN }),
+    });
+    if (!response.ok) throw new Error(response.status);
+    input.value = "";
+  } catch {
+    const index = pending.indexOf(ticket);
+    if (index >= 0) pending.splice(index, 1);
+    echo.remove();
+    input.value = message;
+    addEntry("error", "Não consegui transmitir a mensagem ao Jarvis.");
+  } finally {
+    send.disabled = false;
+    input.focus();
+  }
+});
+
+connect();
+</script>
+</body>
+</html>

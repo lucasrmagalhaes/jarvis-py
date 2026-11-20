@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#121417">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon-192.png">
+  <link rel="stylesheet" href="/app.css">
+  <title>Consulta do vault</title>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="mark">Jarvis</p>
+      <h1>Consulta do vault</h1>
+      <p class="lead">Somente leitura, neste computador. A página não grava notas e não guarda o resultado no aparelho.</p>
+    </header>
+    <form id="form">
+      <label for="q">Pergunta</label>
+      <input id="q" name="q" maxlength="500" autocomplete="off" autocapitalize="sentences" enterkeyhint="search" placeholder="O que as notas registram sobre o assunto">
+      <button type="submit">Consultar</button>
+    </form>
+    <details>
+      <summary>Instalar no Android</summary>
+      <ol>
+        <li>Deixe este processo aberto no computador.</li>
+        <li>Com o cabo, rode o adb reverse na porta impressa no terminal.</li>
+        <li>No Chrome do telefone, abra o link do terminal.</li>
+        <li>No menu do Chrome, escolha Instalar app ou Adicionar à tela inicial.</li>
+      </ol>
+    </details>
+    <button id="install" type="button" hidden>Instalar neste aparelho</button>
+    <p id="status" role="status"></p>
+    <article id="result" hidden>
+      <p id="mode"></p>
+      <h2>Resposta</h2>
+      <p id="answer"></p>
+      <section id="sources"></section>
+      <section id="nearby" hidden></section>
+      <section id="suggestions" hidden></section>
+    </article>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

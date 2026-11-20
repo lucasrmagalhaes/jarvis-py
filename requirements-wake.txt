@@ -1,0 +1,3 @@
+# Instalado com pip install --no-deps, para não puxar tflite-runtime.
+# O Jarvis sobe o modelo com inference_framework=onnx.
+openwakeword>=0.6

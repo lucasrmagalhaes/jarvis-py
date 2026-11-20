@@ -1,0 +1,9 @@
+# Só o que a suíte e o lint precisam.
+# Whisper, openwakeword, sounddevice e onnxruntime ficam de fora:
+# o CI roda sem microfone e sem baixar modelo.
+numpy>=1.26
+packaging>=23
+ruff>=0.8
+tzdata>=2024.1
+# Opcional no uso. A suíte cobre a leitura de anotações de PDF.
+pypdf>=5

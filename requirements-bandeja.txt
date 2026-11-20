@@ -1,0 +1,4 @@
+# Opcional. Ícone da bandeja com pausa, retomada e sair.
+# pip install -r requirements-bandeja.txt
+pystray>=0.19
+Pillow>=10

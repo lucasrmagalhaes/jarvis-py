@@ -1,0 +1,13 @@
+# Perguntas deste vault inventado. As reais ficam em ~/.jarvis/avaliacao.yaml.
+casos:
+  - pergunta: "o que anotei sobre hortela nos livros"
+    espera: Tecnologia/Livros/hortela-de-teste.md
+    evidencia: true
+  - pergunta: "farol ficticio nos vídeos"
+    espera: Tecnologia/Vídeos/farol-ficticio.md
+    evidencia: true
+  - pergunta: "oficina de teste nos cursos"
+    espera: Tecnologia/Cursos/oficina-de-teste.md
+    evidencia: true
+  - pergunta: "receita de bolo de chocolate belga"
+    evidencia: false

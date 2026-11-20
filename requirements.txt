@@ -1,0 +1,16 @@
+# Instalação completa, com áudio e Whisper.
+# O CI usa requirements-dev.txt e não instala este arquivo:
+# assim a suíte roda sem microfone e sem baixar o modelo.
+faster-whisper>=1.0
+sounddevice>=0.4.6
+numpy>=1.26
+onnxruntime>=1.18
+edge-tts>=6.1
+soundfile>=0.12
+
+# Palavra de ativação. No Linux, openwakeword>=0.6 exige tflite-runtime,
+# e esse pacote não tem wheel no Python 3.12 nem no 3.13. O marcador deixa
+# a linha de fora nesses sistemas para o sounddevice, o edge-tts e o
+# soundfile continuarem instalando. O backend ONNX entra pelos arquivos
+# requirements-wake-deps.txt e requirements-wake.txt.
+openwakeword>=0.6; python_version < "3.12" or platform_system != "Linux"

@@ -1,0 +1,10 @@
+.nav-folder:has(> .nav-folder-title[data-path="jarvis/static"]) {
+  display: none;
+}
+
+.canvas-node .metadata-container,
+.canvas-node .metadata-properties-heading,
+.canvas-node .markdown-preview-view .frontmatter,
+.canvas-node .inline-title {
+  display: none !important;
+}

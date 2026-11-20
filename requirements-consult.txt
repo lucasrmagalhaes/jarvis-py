@@ -1,0 +1,4 @@
+# Opcional. A consulta Android funciona sem este arquivo.
+# O pacote abaixo só habilita o modelo local gratuito de busca semântica.
+# python -m jarvis.consult --baixar-modelo baixa os pesos e não lê as notas.
+fastembed>=0.4.2
